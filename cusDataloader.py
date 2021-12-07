@@ -76,7 +76,7 @@ class classificationDataLoader(Dataset):
             'label': y
         }
 
-def imshow(npimg, value, path = "none"):
+def imshow(npimg, value, predict=False, path = "none"):
     if path != "none":
         f = open(path,'r')
         gtList = f.readlines()
@@ -84,15 +84,19 @@ def imshow(npimg, value, path = "none"):
         for n, i in enumerate(npimg):
             img = i.numpy()
             img = np.transpose(img, (1, 2, 0))
-            print(gtList[value[n]])
+            if predict:
+                print("GT : {0}, Predict : {1}".format(gtList[value[n]], gtList[predict]))
+            else:
+                print("GT:",gtList[value[n]])
             cv2.imshow("ee", img)
             cv2.waitKey(0)
+
 if __name__ == "__main__":
     dataset = classificationDataLoader("train.txt", "labels.txt")
     dataloader = DataLoader(dataset, batch_size=256, shuffle=True)
     dataiter = iter(dataloader)
     for epoch in range(500):
         for i, data in enumerate(dataloader, 0):
-            images, labels = data
-            #imshow(images, labels, path="labels.txt")
+
+            imshow(data['image'], data['label'], path="labels.txt")
 
